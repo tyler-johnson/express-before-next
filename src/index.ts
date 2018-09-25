@@ -32,6 +32,7 @@ export default function attachBeforeNext(router: Router) {
       fns.push(fn);
     }
 
+    const originalBeforeNext = req.beforeNext;
     req.beforeNext = beforeNext;
 
     return handle.call(this, req, res, function(this: any, err: any) {
@@ -41,7 +42,7 @@ export default function attachBeforeNext(router: Router) {
         }
 
         if (req.beforeNext === beforeNext) {
-          delete req.beforeNext;
+          req.beforeNext = originalBeforeNext;
         }
 
         done.call(this, err);

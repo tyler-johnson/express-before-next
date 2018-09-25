@@ -20,15 +20,17 @@ const attachBeforeNext = require("express-before-next");
 
 function createHomeRoute() {
   const router = express();
+
+  // monkey patch this router
   attachBeforeNext(router);
 
   router.use(function(req, res, next) {
     // set state on the request that should be cleaned up
-    req.locals.foo = "bar";
+    res.locals.foo = "bar";
 
     // clean up state before going to the next router
     req.beforeNext(() => {
-      delete req.locals.foo;
+      delete res.locals.foo;
     });
   });
 
@@ -41,5 +43,7 @@ function createHomeRoute() {
 
 const bigapp = express();
 bigapp.use(createHomeRouter());
+
+// when these routes get called, res.locals won't bleed in from above
 bigapp.use(otherRoutes());
 ```
